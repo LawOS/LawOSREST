@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -91,11 +92,11 @@ public class Receptionist {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Boolean response = false;
+		int response = 0;
 		java.sql.Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			response = stmt.execute("DELETE FROM `appointment` WHERE AppointmentID=" + appointmentID);
+			response = stmt.executeUpdate("DELETE FROM `appointment` WHERE AppointmendID=" + appointmentID);
 			// rs.close();
 		} catch (SQLException e) {
 			System.err.println("[!]Problem with requested statement");
@@ -104,11 +105,56 @@ public class Receptionist {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return "DELETE FROM `appointment` WHERE AppointmendID=" + appointmentID;
-		// if (response)
-		// return "1";
-		// else
-		// return "0";
+		// return "DELETE FROM `appointment` WHERE AppointmendID=" +
+		// appointmentID;
+		if (response == 1)
+			return "1";
+		else
+			return "0";
 	}
 
-}
+	@Path("/app/inc")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public String viewIncApp() {
+
+		Connection conn = null;
+		try {
+			// This will load the MySQL driver, each DB has its own driver
+			Class.forName("com.mysql.jdbc.Driver");
+			// Setup the connection with the DB
+			// conn =
+			// DriverManager.getConnection("jdbc:mysql://localhost:3306/lawosdb?autoReconnect=true&useSSL=false&useUnicode=true&"+
+			// "user=root&password=root");
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
+
+		} catch (SQLException ex) {
+			// handle any errors
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block.
+			e.printStackTrace();
+		}
+		String response = null;
+		java.sql.Statement stmt;
+		
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM `appointment`");
+			response = GeneralServices.parseJSON(rs);
+			rs.close();
+		} catch (SQLException e) {
+			System.err.println("[!]Problem with requested statement");
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return response;
+	}// end of view inc
+}// end of class
