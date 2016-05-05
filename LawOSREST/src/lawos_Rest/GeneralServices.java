@@ -36,39 +36,38 @@ public class GeneralServices {
 	// return null;
 	// }
 
+	public static String parseJSON(ResultSet rs) throws Exception {
 
-	public static String  parseJSON(ResultSet rs) throws Exception{
-		
-		String ArrayJSON="";
+		String ArrayJSON = "";
 		String culName;
 		String content;
-		int j=0;
-		ResultSetMetaData culnames =rs.getMetaData();
-		 ArrayJSON = "[  "; 
-		while (rs.next()){
+		int j = 0;
+		ResultSetMetaData culnames = rs.getMetaData();
+		ArrayJSON = "[  ";
+		while (rs.next()) {
 			int numOfColumns = culnames.getColumnCount();
 			ArrayJSON = ArrayJSON + "{";
-			for(int i=1; i<= numOfColumns ; i++){
+			for (int i = 1; i <= numOfColumns; i++) {
 				culName = culnames.getColumnName(i);
 				content = rs.getString(i);
-				if (i !=numOfColumns){
-					ArrayJSON= ArrayJSON  + " \""+ culName + "\""  + ": " + "\""+  content +"\"" + ", " ;
-				}else{
-					ArrayJSON = ArrayJSON  + "\""+culName+ "\"" + ": " +"\"" + content + "\""  + " ";
+				if (i != numOfColumns) {
+					ArrayJSON = ArrayJSON + " \"" + culName + "\"" + ": " + "\"" + content + "\"" + ", ";
+				} else {
+					ArrayJSON = ArrayJSON + "\"" + culName + "\"" + ": " + "\"" + content + "\"" + " ";
 				}
 			}
 			ArrayJSON = ArrayJSON + "}";
 			j++;
-			if (!rs.isLast()){
-				ArrayJSON = ArrayJSON+",";
+			if (!rs.isLast()) {
+				ArrayJSON = ArrayJSON + ",";
 			}
-		}	
+		}
 		ArrayJSON = ArrayJSON + "]";
-		
-		String finalJSON = "{ \"size\" : \""+j+"\",  \"results_array\": " +ArrayJSON + "}" ;		
+
+		String finalJSON = "{ \"size\" : \"" + j + "\",  \"results_array\": " + ArrayJSON + "}";
 		return finalJSON;
 	}
-	
+
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -76,15 +75,19 @@ public class GeneralServices {
 			@FormParam("pass") String pass) {
 		String resuser = null;
 		String respass = null;
+		String response = null;
 
 		Connection conn = null;
 		try {
 			// This will load the MySQL driver, each DB has its own driver
 			Class.forName("com.mysql.jdbc.Driver");
 			// Setup the connection with the DB
+			// conn =
+			// DriverManager.getConnection("jdbc:mysql://localhost:3306/lawosdb?autoReconnect=true&useSSL=false&useUnicode=true&"+
+			// "user=root&password=root");
 			conn = DriverManager.getConnection(
-					"jdbc:mysql://localhost:3306/lawosdb?autoReconnect=true&useSSL=false&useUnicode=true&"
-							+ "user=root&password=root");
+					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
+
 		} catch (SQLException ex) {
 			// handle any errors
 			System.out.println("SQLException: " + ex.getMessage());
@@ -101,17 +104,9 @@ public class GeneralServices {
 				stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(
 						"SELECT * FROM legalstaff WHERE (Username = '" + user + "' AND Password='" + pass + "')");
-				
-				String response = parseJSON(rs);
+
+				response = parseJSON(rs);
 				rs.close();
-				
-				return response;
-				
-				/*while (rs.next()) {
-					resuser = rs.getString("Username");
-					respass = rs.getString("Password");
-				}*/
-				/*rs.close();*/
 			} catch (SQLException e) {
 				System.err.println("[!]Problem with requested statement");
 				e.printStackTrace();
@@ -119,21 +114,65 @@ public class GeneralServices {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-			return "{\"type\":\"Legal Staff\", \"user\":\"" + resuser + "\", \"pass\":\"" + respass + "\",\"response\": \"OK\"}";
+			return response;
 
 		} else if (type.compareTo("legalrecordsstaff") == 0) {
+			java.sql.Statement stmt;
+			try {
+				stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(
+						"SELECT * FROM legalstaff WHERE (Username = '" + user + "' AND Password='" + pass +"' AND Type='LegalRecordStaff')");
 
+				response = parseJSON(rs);
+				rs.close();
+			} catch (SQLException e) {
+				System.err.println("[!]Problem with requested statement");
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return response;
 		} else if (type.compareTo("receptionist") == 0) {
+			java.sql.Statement stmt;
+			try {
+				stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(
+						"SELECT * FROM receptionist WHERE (Username = '" + user + "' AND Password='" + pass + "')");
 
+				response = parseJSON(rs);
+				rs.close();
+			} catch (SQLException e) {
+				System.err.println("[!]Problem with requested statement");
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return response;
 		} else if (type.compareTo("headoffice") == 0) {
+			java.sql.Statement stmt;
+			try {
+				stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(
+						"SELECT * FROM legalstaff WHERE (Username = '" + user + "' AND Password='" + pass +"')");
 
+				response = parseJSON(rs);
+				rs.close();
+			} catch (SQLException e) {
+				System.err.println("[!]Problem with requested statement");
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return response;
 		}
 		// return "<?xml version=\"1.0\"?>" + "<response> Wrong Type given
 
 		// return "<?xml version=\"1.0\"?>" + "<user>" + user + "</user>" +
 		// "<pass>" + pass + "</pass>";
-		return "{\"response\":\"Wrong user type requested\"}";
+		return "{\"response\"unsure :\"Wrong user type requested\"}";
 	}
 
 }// end of class
