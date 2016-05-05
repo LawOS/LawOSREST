@@ -8,6 +8,7 @@ import java.sql.SQLException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -175,4 +176,90 @@ public class GeneralServices {
 		return "{\"response\"unsure :\"Wrong user type requested\"}";
 	}
 
+	@Path("/search/client")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public String viewPassedApp(@FormParam("ID") String ID) {
+
+		Connection conn = null;
+		try {
+			// This will load the MySQL driver, each DB has its own driver
+			Class.forName("com.mysql.jdbc.Driver");
+			// Setup the connection with the DB
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
+
+		} catch (SQLException ex) {
+			// handle any errors
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block.
+			e.printStackTrace();
+		}
+		String response = null;
+		java.sql.Statement stmt;
+
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(
+					"SELECT * FROM `client` WHERE ID="+ID);
+			response = GeneralServices.parseJSON(rs);
+			rs.close();
+		} catch (SQLException e) {
+			System.err.println("[!]Problem with requested statement");
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return response;
+	}// end of view client
+	
+	@Path("/recom/strategies")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public String getRecom(@FormParam("ID") String ID) {
+
+		Connection conn = null;
+		try {
+			// This will load the MySQL driver, each DB has its own driver
+			Class.forName("com.mysql.jdbc.Driver");
+			// Setup the connection with the DB
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
+
+		} catch (SQLException ex) {
+			// handle any errors
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block.
+			e.printStackTrace();
+		}
+		String response = null;
+		java.sql.Statement stmt;
+
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(
+					"SELECT DISTINCT Strategy FROM `case` WHERE Client="+ID);
+			response = GeneralServices.parseJSON(rs);
+			rs.close();
+		} catch (SQLException e) {
+			System.err.println("[!]Problem with requested statement");
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return response;
+	}// end of get recommendations for current client
+	
 }// end of class
