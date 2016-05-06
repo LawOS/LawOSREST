@@ -13,9 +13,27 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+/**
+ * Receptionist Service
+ *
+ */
 @Path("/lawos/receptionist")
 public class Receptionist {
 
+	/**
+	 * Add a new appointment into the system for a specific client and lawyer
+	 * given with all the appropriate fields to be entered.
+	 * 
+	 * @param date
+	 * @param time
+	 * @param clientID
+	 * @param legalStaffID
+	 * @param caseID
+	 * @param branchID
+	 * @param recom
+	 * @param legalop
+	 * @return
+	 */
 	@Path("newapp")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -30,9 +48,6 @@ public class Receptionist {
 			// This will load the MySQL driver, each DB has its own driver
 			Class.forName("com.mysql.jdbc.Driver");
 			// Setup the connection with the DB
-			// conn =
-			// DriverManager.getConnection("jdbc:mysql://localhost:3306/lawosdb?autoReconnect=true&useSSL=false&useUnicode=true&"+
-			// "user=root&password=root");
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
 
@@ -67,6 +82,13 @@ public class Receptionist {
 			return "0";
 	}
 
+	/**
+	 * Delete a specific appointment from the system by given AppointmentID
+	 * given.
+	 * 
+	 * @param appointmentID
+	 * @return
+	 */
 	@Path("delapp")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -78,9 +100,6 @@ public class Receptionist {
 			// This will load the MySQL driver, each DB has its own driver
 			Class.forName("com.mysql.jdbc.Driver");
 			// Setup the connection with the DB
-			// conn =
-			// DriverManager.getConnection("jdbc:mysql://localhost:3306/lawosdb?autoReconnect=true&useSSL=false&useUnicode=true&"+
-			// "user=root&password=root");
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
 
@@ -106,14 +125,17 @@ public class Receptionist {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// return "DELETE FROM `appointment` WHERE AppointmendID=" +
-		// appointmentID;
 		if (response == 1)
 			return "1";
 		else
 			return "0";
 	}
 
+	/**
+	 * Returns all the incomplete appointments (pending).
+	 * 
+	 * @return
+	 */
 	@Path("/app/inc")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -156,6 +178,11 @@ public class Receptionist {
 		return response;
 	}// end of view inc
 
+	/**
+	 * Returns all the completed appointments (previous and done).
+	 * 
+	 * @return
+	 */
 	@Path("/app/com")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -167,9 +194,6 @@ public class Receptionist {
 			// This will load the MySQL driver, each DB has its own driver
 			Class.forName("com.mysql.jdbc.Driver");
 			// Setup the connection with the DB
-			// conn =
-			// DriverManager.getConnection("jdbc:mysql://localhost:3306/lawosdb?autoReconnect=true&useSSL=false&useUnicode=true&"+
-			// "user=root&password=root");
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
 
@@ -201,6 +225,11 @@ public class Receptionist {
 		return response;
 	}// end of view com
 
+	/**
+	 * Returns all the passed and failed to complete - appointments.
+	 * 
+	 * @return
+	 */
 	@Path("/app/passed")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -212,9 +241,6 @@ public class Receptionist {
 			// This will load the MySQL driver, each DB has its own driver
 			Class.forName("com.mysql.jdbc.Driver");
 			// Setup the connection with the DB
-			// conn =
-			// DriverManager.getConnection("jdbc:mysql://localhost:3306/lawosdb?autoReconnect=true&useSSL=false&useUnicode=true&"+
-			// "user=root&password=root");
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
 
@@ -247,6 +273,12 @@ public class Receptionist {
 		return response;
 	}// end of view passed
 
+	/**
+	 * Marks a specific appointment as completed and updates it to the system.
+	 * 
+	 * @param appointmentID
+	 * @return
+	 */
 	@Path("/app/mark")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)

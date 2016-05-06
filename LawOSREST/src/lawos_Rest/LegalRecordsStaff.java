@@ -12,9 +12,26 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+/**
+ * Legal Records Staff Service
+ *
+ */
 @Path("/lawos/lrs")
 public class LegalRecordsStaff {
 
+	/**
+	 * Edits the record of a specific client and updates it successfully into
+	 * the database. If the action was successful returns 1, otherwise it
+	 * returns 0. It need as a parameter all the appropriate fields of a client
+	 * record in order to first find the current client and update his fields.
+	 * 
+	 * @param ID
+	 * @param name
+	 * @param surname
+	 * @param unwillingness
+	 * @param comments
+	 * @return
+	 */
 	@Path("/edit/client")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -47,7 +64,7 @@ public class LegalRecordsStaff {
 					+ "', Unwillingness='" + unwillingness + "', Comments='" + comments + "' WHERE ID='" + ID + "'");
 			stmt.executeUpdate("INSERT INTO `Transaction`(`ClientID`, `Date`, `Time`, `Description`) VALUES ('" + ID
 					+ "', " + "CURDATE()," + "CURTIME()," + "'Client record changed to: Name=" + name + ", Surname="
-					+ surname + ", Unwillingness=" + unwillingness + ", Comments=" + comments + ");");
+					+ surname + ", Unwillingness=" + unwillingness + ", Comments=" + comments + "');");
 
 		} catch (SQLException e) {
 			System.err.println("[!]Problem with requested statement");
@@ -63,6 +80,12 @@ public class LegalRecordsStaff {
 			return "0";
 	}// end of edit client record
 	
+	/**
+	 * Get all transactions made for a specific client, by given ClientID.
+	 * 
+	 * @param ID
+	 * @return
+	 */
 	@Path("/transactions/client")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)

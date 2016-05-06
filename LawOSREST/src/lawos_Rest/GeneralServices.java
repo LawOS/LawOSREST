@@ -14,29 +14,21 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+/**
+ * 
+ * General Services are being used in a wide range of users.
+ *
+ */
 @Path("/lawos")
 public class GeneralServices {
 
-	// public java.sql.Connection conn = null;
-
-	// Connection makeConnection() {
-	//
-	// try {
-	// // This will load the MySQL driver, each DB has its own driver
-	// // Class.forName("com.mysql.jdbc.Driver");
-	// // Setup the connection with the DB
-	// conn = DriverManager.getConnection(
-	// "jdbc:mysql://localhost:3306/lawosdb?autoReconnect=true&useSSL=false&useUnicode=true&"
-	// + "user=root&password=root");
-	//
-	// } catch (SQLException e) {
-	// System.err.println("[!]Problem in establishing the connection..");
-	// e.printStackTrace();
-	// }
-	//
-	// return null;
-	// }
-
+	/**
+	 * Parse a ResultSet object into JSON format as string.
+	 * 
+	 * @param rs
+	 * @return
+	 * @throws Exception
+	 */
 	public static String parseJSON(ResultSet rs) throws Exception {
 
 		String ArrayJSON = "";
@@ -69,6 +61,15 @@ public class GeneralServices {
 		return finalJSON;
 	}
 
+	/**
+	 * Login function for any user type. If the user exists returns his username
+	 * and password, otherwise it returns null, null.
+	 * 
+	 * @param type
+	 * @param user
+	 * @param pass
+	 * @return
+	 */
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -83,9 +84,6 @@ public class GeneralServices {
 			// This will load the MySQL driver, each DB has its own driver
 			Class.forName("com.mysql.jdbc.Driver");
 			// Setup the connection with the DB
-			// conn =
-			// DriverManager.getConnection("jdbc:mysql://localhost:3306/lawosdb?autoReconnect=true&useSSL=false&useUnicode=true&"+
-			// "user=root&password=root");
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
 
@@ -103,8 +101,8 @@ public class GeneralServices {
 			java.sql.Statement stmt;
 			try {
 				stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(
-						"SELECT * FROM legalstaff WHERE (Username = '" + user + "' AND Password='" + pass + "' AND Type='LegalStaff')");
+				ResultSet rs = stmt.executeQuery("SELECT * FROM legalstaff WHERE (Username = '" + user
+						+ "' AND Password='" + pass + "' AND Type='LegalStaff')");
 
 				response = parseJSON(rs);
 				rs.close();
@@ -121,8 +119,8 @@ public class GeneralServices {
 			java.sql.Statement stmt;
 			try {
 				stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(
-						"SELECT * FROM legalstaff WHERE (Username = '" + user + "' AND Password='" + pass +"' AND Type='LegalRecordStaff')");
+				ResultSet rs = stmt.executeQuery("SELECT * FROM legalstaff WHERE (Username = '" + user
+						+ "' AND Password='" + pass + "' AND Type='LegalRecordStaff')");
 
 				response = parseJSON(rs);
 				rs.close();
@@ -156,7 +154,7 @@ public class GeneralServices {
 			try {
 				stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(
-						"SELECT * FROM manager WHERE (Username = '" + user + "' AND Password='" + pass +"')");
+						"SELECT * FROM manager WHERE (Username = '" + user + "' AND Password='" + pass + "')");
 
 				response = parseJSON(rs);
 				rs.close();
@@ -169,13 +167,16 @@ public class GeneralServices {
 			}
 			return response;
 		}
-		// return "<?xml version=\"1.0\"?>" + "<response> Wrong Type given
 
-		// return "<?xml version=\"1.0\"?>" + "<user>" + user + "</user>" +
-		// "<pass>" + pass + "</pass>";
 		return "{\"response\"unsure :\"Wrong user type requested\"}";
 	}
 
+	/**
+	 * View a client record by given ClientID sent.
+	 * 
+	 * @param ID
+	 * @return
+	 */
 	@Path("/search/client")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -204,8 +205,7 @@ public class GeneralServices {
 
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(
-					"SELECT * FROM `client` WHERE ID="+ID);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM `client` WHERE ID=" + ID);
 			response = GeneralServices.parseJSON(rs);
 			rs.close();
 		} catch (SQLException e) {
@@ -218,7 +218,15 @@ public class GeneralServices {
 
 		return response;
 	}// end of view client
-	
+
+	/**
+	 * Recomment several strategies in return for a specific ClientID given. The
+	 * strategies are being fetched from the strategies used in the client's
+	 * cases until now.
+	 * 
+	 * @param ID
+	 * @return
+	 */
 	@Path("/recom/strategies")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -247,8 +255,7 @@ public class GeneralServices {
 
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(
-					"SELECT DISTINCT Strategy FROM `case` WHERE Client="+ID);
+			ResultSet rs = stmt.executeQuery("SELECT DISTINCT Strategy FROM `case` WHERE Client=" + ID);
 			response = GeneralServices.parseJSON(rs);
 			rs.close();
 		} catch (SQLException e) {
@@ -261,5 +268,53 @@ public class GeneralServices {
 
 		return response;
 	}// end of get recommendations for current client
-	
+
+	/**
+	 * View the potential Clients that may be involved in illegal activities
+	 * based on their history of illegal money laundering.
+	 * 
+	 * @param ID
+	 * @return
+	 */
+	@Path("/search/clientwithhistory")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public String suspiciousClients() {
+		Connection conn = null;
+		try {
+			// This will load the MySQL driver, each DB has its own driver
+			Class.forName("com.mysql.jdbc.Driver");
+			// Setup the connection with the DB
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
+
+		} catch (SQLException ex) {
+			// handle any errors
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block.
+			e.printStackTrace();
+		}
+		String response = null;
+		java.sql.Statement stmt;
+
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT Client FROM `case` WHERE Flagged_ml = 1");
+			response = GeneralServices.parseJSON(rs);
+			rs.close();
+		} catch (SQLException e) {
+			System.err.println("[!]Problem with requested statement");
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return response;
+	}// end of view client with history of money laundering
+
+
 }// end of class

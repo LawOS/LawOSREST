@@ -12,9 +12,22 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+/**
+ * Legal Staff Service
+ *
+ */
 @Path("/lawos/ls")
 public class LegalStaff {
 
+	/**
+	 * Edit a specific appointment given and update all the appropriate fields
+	 * that are updatable.
+	 * 
+	 * @param ID
+	 * @param recom
+	 * @param legalop
+	 * @return
+	 */
 	@Path("/edit/app")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -60,6 +73,12 @@ public class LegalStaff {
 			return "0";
 	}// end of edit an appointment
 
+	/**
+	 * View current appointment given by AppointmentID.
+	 * 
+	 * @param ID
+	 * @return
+	 */
 	@Path("/view/app")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -101,6 +120,17 @@ public class LegalStaff {
 		return response;
 	}// end of view an appointment
 
+	/**
+	 * Edit a specific case record of a client by given CaseID given and all the
+	 * appropriate fields that are updatable from the user in order to edit them
+	 * correctly.
+	 * 
+	 * @param ID
+	 * @param strategy
+	 * @param details
+	 * @param flagged_ml
+	 * @return
+	 */
 	@Path("/edit/case")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -146,6 +176,12 @@ public class LegalStaff {
 			return "0";
 	}// end of edit a case
 
+	/**
+	 * Returns all case records of a specific client given by ClientID.
+	 * 
+	 * @param ID
+	 * @return
+	 */
 	@Path("/view/allcases")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -187,6 +223,17 @@ public class LegalStaff {
 		return response;
 	}// end of view all appointments of a client
 
+	/**
+	 * Adds a new case record into the system by giving the appropriate fields
+	 * that need to be entered.
+	 * 
+	 * @param strategy
+	 * @param details
+	 * @param flagged_ml
+	 * @param clientID
+	 * @param lawyerID
+	 * @return
+	 */
 	@Path("/add/case")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -233,6 +280,13 @@ public class LegalStaff {
 			return "0";
 	}
 
+	/**
+	 * Returns all the side effects as recommendations from the system for a
+	 * specific strategy given.
+	 * 
+	 * @param strategy
+	 * @return
+	 */
 	@Path("/view/strategy/sideeffects")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -274,11 +328,18 @@ public class LegalStaff {
 		return response;
 	}// end of viewSideEffectsByStrategy
 
+	/**
+	 * Returns 1 or 0 if the client given by ClientID is involved in money
+	 * laundering or not.
+	 * 
+	 * @param ID
+	 * @return
+	 */
 	@Path("/view/client/isml")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String addCase(@FormParam("ClientID") String ID) {
+	public String isml(@FormParam("ClientID") String ID) {
 
 		Connection conn = null;
 		try {
