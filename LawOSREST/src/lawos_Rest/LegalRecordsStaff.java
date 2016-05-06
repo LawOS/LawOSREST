@@ -7,7 +7,6 @@ import java.sql.SQLException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -21,7 +20,7 @@ public class LegalRecordsStaff {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public String editClient(@FormParam("ID") String ID, @FormParam("Name") String name,
-			@FormParam("Surname") String surname, @FormParam("Unwillingness") String unwillingness) {
+			@FormParam("Surname") String surname, @FormParam("Unwillingness") String unwillingness, @FormParam("Comments") String comments) {
 
 		Connection conn = null;
 		try {
@@ -45,10 +44,10 @@ public class LegalRecordsStaff {
 		try {
 			stmt = conn.createStatement();
 			response = stmt.executeUpdate("UPDATE `client` SET Name='" + name + "', Surname='" + surname
-					+ "', Unwillingness='" + unwillingness + "'" + " WHERE ID='" + ID + "'");
+					+ "', Unwillingness='" + unwillingness + "', Comments='" + comments + "' WHERE ID='" + ID + "'");
 			stmt.executeUpdate("INSERT INTO `Transaction`(`ClientID`, `Date`, `Time`, `Description`) VALUES ('" + ID
 					+ "', " + "CURDATE()," + "CURTIME()," + "'Client record changed to: Name=" + name + ", Surname="
-					+ surname + ", Unwillingness=" + unwillingness + "');");
+					+ surname + ", Unwillingness=" + unwillingness + ", Comments=" + comments + ");");
 
 		} catch (SQLException e) {
 			System.err.println("[!]Problem with requested statement");
