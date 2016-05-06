@@ -12,14 +12,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-@Path("/lawos/hom")
-public class HeadOfficeManagement {
+@Path("/lawos/ls")
+public class LegalStaff {
 
-	@Path("/reports/branch/nclient")
+	@Path("/edit/app")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String viewNumofClientsPerBranch(@FormParam("BranchID") String BranchID) {
+	public String editAppointment(@FormParam("AppointmentID") String ID, @FormParam("Recommendation") String recom,
+			@FormParam("LegalOpinion") String legalop) {
 
 		Connection conn = null;
 		try {
@@ -35,19 +36,16 @@ public class HeadOfficeManagement {
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block.
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String response = null;
+		int response = 0;
 		java.sql.Statement stmt;
-
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt
-					.executeQuery("SELECT MONTH(`Date`), COUNT(DISTINCT ClientID) FROM `appointment` WHERE BranchID="
-							+ BranchID + " GROUP BY MONTH(`Date`)");
-			response = GeneralServices.parseJSON(rs);
-			rs.close();
+			response = stmt.executeUpdate("UPDATE `appointment` SET Completed=1, Recommendation='" + recom
+					+ "', LegalOpinion='" + legalop + "' WHERE AppointmendID=" + ID);
+
 		} catch (SQLException e) {
 			System.err.println("[!]Problem with requested statement");
 			e.printStackTrace();
@@ -56,14 +54,17 @@ public class HeadOfficeManagement {
 			e.printStackTrace();
 		}
 
-		return response;
-	}// end of numofclients per branch
+		if (response == 1)
+			return "1";
+		else
+			return "0";
+	}// end of edit an appointment
 
-	@Path("/reports/recom/permonth")
+	@Path("/view/app")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String viewRecomPerBranch(@FormParam("BranchID") String BranchID) {
+	public String viewAppointment(@FormParam("AppointmentID") String ID) {
 
 		Connection conn = null;
 		try {
@@ -79,16 +80,14 @@ public class HeadOfficeManagement {
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block.
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String response = null;
 		java.sql.Statement stmt;
-
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt
-					.executeQuery("SELECT DISTINCT Recommendation FROM `appointment` WHERE BranchID=" + BranchID);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM `appointment` WHERE AppointmendID=" + ID);
 			response = GeneralServices.parseJSON(rs);
 			rs.close();
 		} catch (SQLException e) {
@@ -100,13 +99,14 @@ public class HeadOfficeManagement {
 		}
 
 		return response;
-	}// end of viewRecomPerBranch
+	}// end of view an appointment
 
-	@Path("/reports/legalop/permonth")
+	@Path("/edit/case")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String viewLegalopPerBranch(@FormParam("BranchID") String BranchID) {
+	public String editCase(@FormParam("CaseID") String ID, @FormParam("Strategy") String strategy,
+			@FormParam("Details") String details, @FormParam("Flagged_ml") String flagged_ml) {
 
 		Connection conn = null;
 		try {
@@ -122,18 +122,16 @@ public class HeadOfficeManagement {
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block.
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String response = null;
+		int response = 0;
 		java.sql.Statement stmt;
-
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt
-					.executeQuery("SELECT DISTINCT LegalOpinion FROM `appointment` WHERE BranchID=" + BranchID);
-			response = GeneralServices.parseJSON(rs);
-			rs.close();
+			response = stmt.executeUpdate("UPDATE `case` SET Strategy='" + strategy + "', Details='" + details
+					+ "', Flagged_ml=" + flagged_ml + " WHERE CaseID=" + ID);
+
 		} catch (SQLException e) {
 			System.err.println("[!]Problem with requested statement");
 			e.printStackTrace();
@@ -142,14 +140,17 @@ public class HeadOfficeManagement {
 			e.printStackTrace();
 		}
 
-		return response;
-	}// end of viewRecomPerBranch
+		if (response == 1)
+			return "1";
+		else
+			return "0";
+	}// end of edit a case
 
-	@Path("/reports/client/timeswait")
+	@Path("/view/allcases")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String getClientComApp(@FormParam("ID") String ID) {
+	public String viewAllClientCases(@FormParam("ClientID") String ID) {
 
 		Connection conn = null;
 		try {
@@ -165,16 +166,14 @@ public class HeadOfficeManagement {
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block.
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String response = null;
 		java.sql.Statement stmt;
-
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt
-					.executeQuery("SELECT * FROM `appointment` WHERE (ClientID='" + ID + "' AND Completed=1)");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM `case` WHERE Client='" + ID + "'");
 			response = GeneralServices.parseJSON(rs);
 			rs.close();
 		} catch (SQLException e) {
@@ -186,13 +185,15 @@ public class HeadOfficeManagement {
 		}
 
 		return response;
-	}// end of viewRecomPerBranch
+	}// end of view all appointments of a client
 
-	@Path("/reports/weekly/perbranch/attended")
+	@Path("/add/case")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String getWeeklyClientsAttendedPerBranch(@FormParam("BranchID") String BranchID) {
+	public String addCase(@FormParam("Strategy") String strategy, @FormParam("Details") String details,
+			@FormParam("Flagged_ml") String flagged_ml, @FormParam("ClientID") String clientID,
+			@FormParam("LawyerID") String lawyerID) {
 
 		Connection conn = null;
 		try {
@@ -208,19 +209,17 @@ public class HeadOfficeManagement {
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block.
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String response = null;
+		int response = 0;
 		java.sql.Statement stmt;
-
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(
-					"SELECT DAYOFWEEK(`Date`), COUNT(DISTINCT ClientID) FROM `appointment` WHERE (Completed=1 AND BranchID=" + BranchID
-							+ " AND Date <= CURDATE()) GROUP BY DAYOFWEEK(`Date`)");
-			response = GeneralServices.parseJSON(rs);
-			rs.close();
+			response = stmt.executeUpdate(
+					"INSERT INTO `case`(`Strategy`, `Details`, `Flagged_ml`, `Client`, `Lawyer`) VALUES ('" + strategy
+							+ "', '" + details + "', " + flagged_ml + ", '" + clientID + "', " + lawyerID + ");");
+			// rs.close();
 		} catch (SQLException e) {
 			System.err.println("[!]Problem with requested statement");
 			e.printStackTrace();
@@ -228,15 +227,17 @@ public class HeadOfficeManagement {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		if (response == 1)
+			return "1";
+		else
+			return "0";
+	}
 
-		return response;
-	}// end of getWeeklyClientsAttendedPerBranch
-	
-	@Path("/reports/weekly/perbranch/all")
+	@Path("/view/strategy/sideeffects")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String getWeeklyClientsTotalVisitedPerBranch(@FormParam("BranchID") String BranchID) {
+	public String viewSideEffectsByStrategy(@FormParam("Strategy") String strategy) {
 
 		Connection conn = null;
 		try {
@@ -252,17 +253,14 @@ public class HeadOfficeManagement {
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block.
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String response = null;
 		java.sql.Statement stmt;
-
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(
-					"SELECT DAYOFWEEK(`Date`), COUNT(DISTINCT ClientID) FROM `appointment` WHERE (BranchID=" + BranchID
-							+ " AND Date <= CURDATE()) GROUP BY DAYOFWEEK(`Date`)");
+			ResultSet rs = stmt.executeQuery("SELECT DISTINCT SideEffect FROM `Strategy` WHERE Strategy='" + strategy + "'");
 			response = GeneralServices.parseJSON(rs);
 			rs.close();
 		} catch (SQLException e) {
@@ -274,13 +272,13 @@ public class HeadOfficeManagement {
 		}
 
 		return response;
-	}// end of getWeeklyClientsTotalVisitedPerBranch
+	}// end of viewSideEffectsByStrategy
 
-	@Path("/reports/weekly/perclient")
+	@Path("/view/client/isml")
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String getWeeklyPerClient(@FormParam("ClientID") String ClientID) {
+	public String addCase(@FormParam("ClientID") String ID) {
 
 		Connection conn = null;
 		try {
@@ -296,17 +294,14 @@ public class HeadOfficeManagement {
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block.
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String response = null;
 		java.sql.Statement stmt;
-
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(
-					"SELECT DAYOFWEEK(`Date`), COUNT(DISTINCT Recommendation), COUNT(DISTINCT LegalOpinion) FROM `appointment` WHERE (ClientID='" + ClientID
-							+ "' AND Date <= CURDATE()) GROUP BY DAYOFWEEK(`Date`)");
+			ResultSet rs = stmt.executeQuery("SELECT COUNT(DISTINCT Flagged_ml) FROM `case` WHERE ( Flagged_ml=1 AND Client='" + ID + "')");
 			response = GeneralServices.parseJSON(rs);
 			rs.close();
 		} catch (SQLException e) {
@@ -316,7 +311,6 @@ public class HeadOfficeManagement {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return response;
-	}// end of getWeeklyPerClient
+	}
 }// end of class

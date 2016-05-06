@@ -104,7 +104,7 @@ public class GeneralServices {
 			try {
 				stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(
-						"SELECT * FROM legalstaff WHERE (Username = '" + user + "' AND Password='" + pass + "')");
+						"SELECT * FROM legalstaff WHERE (Username = '" + user + "' AND Password='" + pass + "' AND Type='LegalStaff')");
 
 				response = parseJSON(rs);
 				rs.close();
@@ -156,7 +156,7 @@ public class GeneralServices {
 			try {
 				stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(
-						"SELECT * FROM legalstaff WHERE (Username = '" + user + "' AND Password='" + pass +"')");
+						"SELECT * FROM manager WHERE (Username = '" + user + "' AND Password='" + pass +"')");
 
 				response = parseJSON(rs);
 				rs.close();
@@ -180,7 +180,7 @@ public class GeneralServices {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public String viewPassedApp(@FormParam("ID") String ID) {
+	public String viewClient(@FormParam("ID") String ID) {
 
 		Connection conn = null;
 		try {
