@@ -22,7 +22,8 @@ public class Receptionist {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	public String addAppointment(@FormParam("date") String date, @FormParam("time") String time,
 			@FormParam("clientID") String clientID, @FormParam("legalStaffID") String legalStaffID,
-			@FormParam("caseID") String caseID) {
+			@FormParam("caseID") String caseID, @FormParam("branchID") String branchID,
+			@FormParam("recom") String recom, @FormParam("legalop") String legalop) {
 
 		Connection conn = null;
 		try {
@@ -49,9 +50,9 @@ public class Receptionist {
 		try {
 			stmt = conn.createStatement();
 			response = stmt.executeUpdate(
-					"INSERT INTO `appointment`(`Date`, `Time`, `Completed`, `clientID`, `legalStaffID`, `Case`) VALUES ('"
-							+ date + "', '" + time + "', 0, '" + clientID + "', " + legalStaffID + ", " + caseID
-							+ ");");
+					"INSERT INTO `appointment`(`Date`, `Time`, `Completed`, `clientID`, `legalStaffID`, `Case`, `BranchID`, `Recommendation`, `LegalOpinion`) VALUES ('"
+							+ date + "', '" + time + "', 0, '" + clientID + "', " + legalStaffID + ", " + caseID + ", "
+							+ branchID + ", '" + recom + "', '" + legalop + "');");
 			// rs.close();
 		} catch (SQLException e) {
 			System.err.println("[!]Problem with requested statement");
@@ -124,9 +125,6 @@ public class Receptionist {
 			// This will load the MySQL driver, each DB has its own driver
 			Class.forName("com.mysql.jdbc.Driver");
 			// Setup the connection with the DB
-			// conn =
-			// DriverManager.getConnection("jdbc:mysql://localhost:3306/lawosdb?autoReconnect=true&useSSL=false&useUnicode=true&"+
-			// "user=root&password=root");
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
 
