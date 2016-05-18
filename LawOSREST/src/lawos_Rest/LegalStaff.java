@@ -177,6 +177,57 @@ public class LegalStaff {
 	}// end of edit a case
 
 	/**
+	 * View a specific case record of a client by given CaseID and all the
+	 * appropriate fields that are stored.
+	 * 
+	 * @param ID
+	 * @param strategy
+	 * @param details
+	 * @param flagged_ml
+	 * @return
+	 */
+	@Path("/view/case")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public String viewCase(@FormParam("CaseID") String ID) {
+
+		Connection conn = null;
+		try {
+			// This will load the MySQL driver, each DB has its own driver
+			Class.forName("com.mysql.jdbc.Driver");
+			// Setup the connection with the DB
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
+
+		} catch (SQLException ex) {
+			// handle any errors
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String response = null;
+		java.sql.Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM `case` WHERE CaseID=" + ID);
+			response = GeneralServices.parseJSON(rs);
+			rs.close();
+		} catch (SQLException e) {
+			System.err.println("[!]Problem with requested statement");
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return response;
+	}// end of edit a case
+
+	/**
 	 * Returns all case records of a specific client given by ClientID.
 	 * 
 	 * @param ID
@@ -314,7 +365,8 @@ public class LegalStaff {
 		java.sql.Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT DISTINCT SideEffect FROM `Strategy` WHERE Strategy='" + strategy + "'");
+			ResultSet rs = stmt
+					.executeQuery("SELECT DISTINCT SideEffect FROM `Strategy` WHERE Strategy='" + strategy + "'");
 			response = GeneralServices.parseJSON(rs);
 			rs.close();
 		} catch (SQLException e) {
@@ -362,7 +414,8 @@ public class LegalStaff {
 		java.sql.Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT COUNT(DISTINCT Flagged_ml) FROM `case` WHERE ( Flagged_ml=1 AND Client='" + ID + "')");
+			ResultSet rs = stmt.executeQuery(
+					"SELECT COUNT(DISTINCT Flagged_ml) FROM `case` WHERE ( Flagged_ml=1 AND Client='" + ID + "')");
 			response = GeneralServices.parseJSON(rs);
 			rs.close();
 		} catch (SQLException e) {
