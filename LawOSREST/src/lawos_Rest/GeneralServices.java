@@ -253,7 +253,7 @@ public class GeneralServices {
 
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM `email` WHERE (To=" + ID + " AND IsRead=0)");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM `email` WHERE (`To`=" + ID + " AND IsRead=0)");
 			response = GeneralServices.parseJSON(rs);
 			rs.close();
 		} catch (SQLException e) {
@@ -301,7 +301,7 @@ public class GeneralServices {
 
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM `email` WHERE (To=" + ID + " AND IsRead=1)");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM `email` WHERE (`To`=" + ID + " AND IsRead=1)");
 			response = GeneralServices.parseJSON(rs);
 			rs.close();
 		} catch (SQLException e) {
@@ -349,7 +349,7 @@ public class GeneralServices {
 
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM `email` WHERE From=" + ID);
+			ResultSet rs = stmt.executeQuery("SELECT * FROM `email` WHERE `From`=" + ID);
 			response = GeneralServices.parseJSON(rs);
 			rs.close();
 		} catch (SQLException e) {
