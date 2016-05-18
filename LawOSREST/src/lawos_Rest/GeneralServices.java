@@ -218,6 +218,151 @@ public class GeneralServices {
 
 		return response;
 	}// end of view client
+	
+	/**
+	 * View unread emails of a specific legal staff ID given.
+	 * 
+	 * @param ID
+	 * @return
+	 */
+	@Path("/emails/view/unread")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public String viewEmailsUnread(@FormParam("ID") String ID) {
+
+		Connection conn = null;
+		try {
+			// This will load the MySQL driver, each DB has its own driver
+			Class.forName("com.mysql.jdbc.Driver");
+			// Setup the connection with the DB
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
+
+		} catch (SQLException ex) {
+			// handle any errors
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block.
+			e.printStackTrace();
+		}
+		String response = null;
+		java.sql.Statement stmt;
+
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM `email` WHERE (To=" + ID + " AND IsRead=0)");
+			response = GeneralServices.parseJSON(rs);
+			rs.close();
+		} catch (SQLException e) {
+			System.err.println("[!]Problem with requested statement");
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return response;
+	}// end of view emails unread
+	
+
+	/**
+	 * View read emails of a specific legal staff ID given.
+	 * 
+	 * @param ID
+	 * @return
+	 */
+	@Path("/emails/view/read")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public String viewEmailsRead(@FormParam("ID") String ID) {
+
+		Connection conn = null;
+		try {
+			// This will load the MySQL driver, each DB has its own driver
+			Class.forName("com.mysql.jdbc.Driver");
+			// Setup the connection with the DB
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
+
+		} catch (SQLException ex) {
+			// handle any errors
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block.
+			e.printStackTrace();
+		}
+		String response = null;
+		java.sql.Statement stmt;
+
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM `email` WHERE (To=" + ID + " AND IsRead=1)");
+			response = GeneralServices.parseJSON(rs);
+			rs.close();
+		} catch (SQLException e) {
+			System.err.println("[!]Problem with requested statement");
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return response;
+	}// end of view emails read
+	
+	/**
+	 * View sent emails of a specific legal staff ID given.
+	 * 
+	 * @param ID
+	 * @return
+	 */
+	@Path("/emails/view/sent")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public String viewEmailsSent(@FormParam("ID") String ID) {
+
+		Connection conn = null;
+		try {
+			// This will load the MySQL driver, each DB has its own driver
+			Class.forName("com.mysql.jdbc.Driver");
+			// Setup the connection with the DB
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
+
+		} catch (SQLException ex) {
+			// handle any errors
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block.
+			e.printStackTrace();
+		}
+		String response = null;
+		java.sql.Statement stmt;
+
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM `email` WHERE From=" + ID);
+			response = GeneralServices.parseJSON(rs);
+			rs.close();
+		} catch (SQLException e) {
+			System.err.println("[!]Problem with requested statement");
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return response;
+	}// end of view emails sent
 
 	/**
 	 * Recomment several strategies in return for a specific ClientID given. The
