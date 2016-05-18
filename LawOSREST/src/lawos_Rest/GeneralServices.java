@@ -218,7 +218,7 @@ public class GeneralServices {
 
 		return response;
 	}// end of view client
-	
+
 	/**
 	 * View unread emails of a specific legal staff ID given.
 	 * 
@@ -266,7 +266,6 @@ public class GeneralServices {
 
 		return response;
 	}// end of view emails unread
-	
 
 	/**
 	 * View read emails of a specific legal staff ID given.
@@ -315,7 +314,7 @@ public class GeneralServices {
 
 		return response;
 	}// end of view emails read
-	
+
 	/**
 	 * View sent emails of a specific legal staff ID given.
 	 * 
@@ -365,7 +364,107 @@ public class GeneralServices {
 	}// end of view emails sent
 
 	/**
-	 * Recomment several strategies in return for a specific ClientID given. The
+	 * View send emails of a specific legal staff ID given.
+	 * 
+	 * @param ID
+	 * @return
+	 */
+	@Path("/emails/send")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public String sendEmail(@FormParam("From") String from, @FormParam("To") String to,
+			@FormParam("Title") String title, @FormParam("Body") String body) {
+
+		Connection conn = null;
+		try {
+			// This will load the MySQL driver, each DB has its own driver
+			Class.forName("com.mysql.jdbc.Driver");
+			// Setup the connection with the DB
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
+
+		} catch (SQLException ex) {
+			// handle any errors
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block.
+			e.printStackTrace();
+		}
+		int response = 0;
+		java.sql.Statement stmt;
+
+		try {
+			stmt = conn.createStatement();
+			response = stmt.executeUpdate("INSERT INTO `email`(`From`, `To`, `Title`, `Body`) VALUES (" + from + ", "
+					+ to + ", '" + title + "', '" + body + "');");
+		} catch (SQLException e) {
+			System.err.println("[!]Problem with requested statement");
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (response == 1)
+			return "1";
+		else
+			return "0";
+	}// end of send a new email
+	
+	/**
+	 * View send emails of a specific legal staff ID given.
+	 * 
+	 * @param ID
+	 * @return
+	 */
+	@Path("/emails/markread")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public String markEmailRead(@FormParam("EmailID") String ID) {
+
+		Connection conn = null;
+		try {
+			// This will load the MySQL driver, each DB has its own driver
+			Class.forName("com.mysql.jdbc.Driver");
+			// Setup the connection with the DB
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://phpmyadmin.in.cs.ucy.ac.cy/cs363db?" + "user=cs363db&password=NjFU2pKz");
+
+		} catch (SQLException ex) {
+			// handle any errors
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block.
+			e.printStackTrace();
+		}
+		int response = 0;
+		java.sql.Statement stmt;
+
+		try {
+			stmt = conn.createStatement();
+			response = stmt.executeUpdate("UPDATE `email` SET IsRead=1 WHERE EmailID=" + ID);
+		} catch (SQLException e) {
+			System.err.println("[!]Problem with requested statement");
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (response == 1)
+			return "1";
+		else
+			return "0";
+	}// end of mark an email as read
+
+	/**
+	 * Recommend several strategies in return for a specific ClientID given. The
 	 * strategies are being fetched from the strategies used in the client's
 	 * cases until now.
 	 * 
@@ -460,6 +559,5 @@ public class GeneralServices {
 
 		return response;
 	}// end of view client with history of money laundering
-
 
 }// end of class
