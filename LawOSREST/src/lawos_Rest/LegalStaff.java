@@ -257,7 +257,7 @@ public class LegalStaff {
 		java.sql.Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT Unwillingness FROM `client` WHERE ClientID='" + ID + "'");
+			ResultSet rs = stmt.executeQuery("SELECT Unwillingness FROM `client` WHERE ID='" + ID + "'");
 			response = GeneralServices.parseJSON(rs);
 			rs.close();
 		} catch (SQLException e) {
